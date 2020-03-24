@@ -69,6 +69,7 @@ public class HandlerProcessor extends AbstractProcessor {
         List<TypeElement> interfaces = getAnnotatedInterfaces(elements);
 
         for (TypeElement targetInterface : interfaces) {
+            mMethodPairs.clear();
             generateProxySourceFile(targetInterface);
         }
 
