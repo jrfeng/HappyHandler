@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements Hello {
 **Custom Handler name:**
 
 ```java
-@Handler("MyCustomHandler") // custom Hander name
+@Handler("MyCustomHandler") // custom Handler name
 public interface Hello {
     void say(String words);
 
