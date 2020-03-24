@@ -1,0 +1,4 @@
+rootProject.name='HappyHandler'
+include ':app'
+include ':compiler'
+include ':annotation'
