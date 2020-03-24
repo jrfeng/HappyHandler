@@ -62,7 +62,7 @@ public interface Hello {
 }
 ```
 
-**Step 2**. 构造项目
+**第 2 步**：构造项目
 
 构建你的项目，注解处理器会根据接口自动生成一个 **`HelloHandler`** 类，该类继承了 `android.os.Handler` 类，并且实现了前面创建的 `Hello` 接口。
 
@@ -112,7 +112,7 @@ public interface Hello {
 
 ## Download
 
-**Step 1**. Add it in your root `build.gradle` at the end of repositories:
+**第 1 步**：在项目的根目录下的 `build.gradle` 文件中添加以下代码：
 
 ```gradle
 allprojects {
@@ -123,7 +123,7 @@ allprojects {
 }
 ```
 
-**Step 2**. Add the dependency
+**第 2 步**：添加依赖：
 
 ```gradle
 dependencies {
