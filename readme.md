@@ -125,7 +125,8 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.jrfeng:HappyHandler:1.0'
+    implementation 'com.github.jrfeng.HappyHandler:annotation:1.0'
+    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.0'
 }
 ```
 
