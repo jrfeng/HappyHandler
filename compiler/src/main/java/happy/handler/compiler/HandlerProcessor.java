@@ -9,6 +9,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -124,10 +125,9 @@ public class HandlerProcessor extends AbstractProcessor {
                 .initializer(String.valueOf(mMethodPairs.size()))
                 .build());
 
-        // Field: mReceiver
-        proxyClassBuilder.addField(FieldSpec.builder(
-                TypeName.get(targetInterface.asType()),
-                "mReceiver",
+        // Field: mWeakReceiver
+        proxyClassBuilder.addField(FieldSpec.builder(WeakReference.class,
+                "mWeakReceiver",
                 Modifier.PRIVATE
         ).build());
 
@@ -138,7 +138,7 @@ public class HandlerProcessor extends AbstractProcessor {
         proxyClassBuilder.addMethods(generateConstructors(targetInterface));
 
         // Override handleMessage
-        proxyClassBuilder.addMethod(overrideHandleMessage());
+        proxyClassBuilder.addMethod(overrideHandleMessage(targetInterface));
 
         JavaFile javaFile = JavaFile.builder(packageName, proxyClassBuilder.build())
                 .build();
@@ -246,7 +246,7 @@ public class HandlerProcessor extends AbstractProcessor {
                 .addParameter(ClassName.get("android.os", "Looper"), "looper")
                 .addParameter(TypeName.get(targetInterface.asType()), "receiver")
                 .addStatement("super(looper)")
-                .addStatement("mReceiver = receiver")
+                .addStatement("mWeakReceiver = new $T(receiver)", WeakReference.class)
                 .build();
 
         MethodSpec constructor2 = MethodSpec.constructorBuilder()
@@ -261,12 +261,18 @@ public class HandlerProcessor extends AbstractProcessor {
         return constructors;
     }
 
-    private MethodSpec overrideHandleMessage() {
+    private MethodSpec overrideHandleMessage(TypeElement targetInterface) {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("handleMessage")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .returns(void.class)
                 .addParameter(ClassName.get("android.os", "Message"), "msg");
+
+        builder.addStatement("$T receiver = ($T)mWeakReceiver.get()", targetInterface, targetInterface);
+
+        builder.beginControlFlow("if (receiver == null)")
+                .addStatement("return")
+                .endControlFlow();
 
         builder.addStatement("List args = (ArrayList)msg.obj")
                 .beginControlFlow("switch (msg.what)");
@@ -281,9 +287,9 @@ public class HandlerProcessor extends AbstractProcessor {
             List<? extends VariableElement> parameters = pair.getValue().getParameters();
 
             if (parameters.size() < 1) {
-                builder.addStatement("mReceiver.$N()", pair.getValue().getSimpleName());
+                builder.addStatement("receiver.$N()", pair.getValue().getSimpleName());
             } else {
-                buff.append("mReceiver.")
+                buff.append("receiver.")
                         .append(pair.getValue().getSimpleName())
                         .append("(");
 
