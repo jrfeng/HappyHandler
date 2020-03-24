@@ -1,6 +1,6 @@
-**Help developer implement `handleMessage()` method.**
+帮助开发者实现 **`handleMessage()`** 方法。
 
-**Traditional：**
+**传统做法：**
 
 ```java
 public class MainActivity extends AppCompatActivity {
@@ -45,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-**Use HappyHandler：**
+**使用 HappyHandler：**
 
-**Step 1**. Create a interface, and annotated with `happy.handler.Hanlder`:
+**第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它：
 
 ```java
 package com.demo;
@@ -62,11 +62,11 @@ public interface Hello {
 }
 ```
 
-**Step 2**. Build project
+**Step 2**. 构造项目
 
-Build your project, then will automatically generate a **`HelloHandler`** class, that extends `android.os.Handler` and implemented `Hello` interface.
+构建你的项目，注解处理器会根据接口自动生成一个 **`HelloHandler`** 类，该类继承了 `android.os.Handler` 类，并且实现了前面创建的 `Hello` 接口。
 
-Then, we can use `HelloHandler` like this:
+接着，我们就可以在项目中自由的使用 `HelloHandler` 类了：
 
 ```java
 import com.demo.HelloHandler;
@@ -97,10 +97,12 @@ public class MainActivity extends AppCompatActivity implements Hello {
 }
 ```
 
-**Custom Handler name:**
+这样可以避免编写不必要的 `switch` 代码。
+
+**自定义 `Handler` 名称:**
 
 ```java
-@Handler("MyCustomHandler") // custom Handler name
+@Handler("MyCustomHandler") // 自定义 Handler 名称
 public interface Hello {
     void say(String words);
 
