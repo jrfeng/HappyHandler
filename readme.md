@@ -1,6 +1,6 @@
 帮助开发者实现 **`handleMessage()`** 方法。
 
-**传统做法：**
+**自定义 Handler 的传统做法：**
 
 ```java
 public class MainActivity extends AppCompatActivity {
@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Hello!", Toast.LENGTH_SHORT).show();
     }
 
+    // 自定义 Handler
     private static class MyHandler extends Handler {
         private WeakReference<MainActivity> mMainActivityRef;
 
@@ -62,9 +63,11 @@ public interface Hello {
 }
 ```
 
-**第 2 步**：构造项目
+**注意！接口中方法的返回值必须是 `void`。**
 
-构建你的项目，注解处理器会根据接口自动生成一个 **`HelloHandler`** 类，该类继承了 `android.os.Handler` 类，并且实现了前面创建的 `Hello` 接口。
+**第 2 步**：构建项目
+
+构建项目时，`HappyHandler` 的会根据被 `@Handler` 注解标记的接口自动生成一个 **`xxxHandler`** 类（其中，`xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。使用 `HappyHandler` 可以避免手动编写自定义 `Handler` 的繁琐过程。
 
 接着，我们就可以在项目中自由的使用 `HelloHandler` 类了：
 
@@ -83,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements Hello {
 
         ...
         mHelloHandler = new HelloHandler(this);
+        // 接下来，就可以在其他线程中使用 mHelloHandler 来更新 UI
+        // 避免了手动编写自定义 Handler 的繁琐过程
     }
 
     @Override
@@ -96,8 +101,6 @@ public class MainActivity extends AppCompatActivity implements Hello {
     }
 }
 ```
-
-这样可以避免编写不必要的 `switch` 代码。
 
 **自定义 `Handler` 名称:**
 
