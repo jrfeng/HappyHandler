@@ -1,4 +1,4 @@
-帮助开发者实现 **`handleMessage()`** 方法。
+**功能：帮助开发者轻松的实现自定义 Handler。**
 
 **自定义 Handler 的传统做法：**
 
@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
+可以看到，为了使用 `Handler`，开发者不得不编写一串长长的模板代码，如果需要在多个地方使用 `Handler`，则不得不一遍又一遍的重复这个繁琐过程。`HappyHander` 可以帮助我们简化这一流程，开发者只需定义一个接口，剩下的事交给 `HappyHander` 即可。
+
 **使用 HappyHandler：**
 
 **第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它：
@@ -67,7 +69,7 @@ public interface Hello {
 
 **第 2 步**：构建项目
 
-构建项目时，`HappyHandler` 的会根据被 `@Handler` 注解标记的接口自动生成一个 **`xxxHandler`** 类（其中，`xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。使用 `HappyHandler` 可以避免手动编写自定义 `Handler` 的繁琐过程。
+构建项目时，`HappyHandler` 的会根据被 `@Handler` 注解标记的接口自动生成一个 `XxxHandler` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。
 
 接着，我们就可以在项目中自由的使用 `HelloHandler` 类了：
 
