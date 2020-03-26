@@ -156,17 +156,17 @@ public interface Hello {
 
 ```java
 // 用于创建客户端 Messenger
-public MyMessenger(IBinder target)
+public HelloMessenger(IBinder target)
 
 // 用于创建服务端 Messenger
-public MyMessenger(
+public HelloMessenger(
         Looper looper,              // Looper
-        HelloMessenger receiver     // 接口类型，事件的接收者
+        Hello receiver     // 接口类型，事件的接收者
 )
 
 // 用于创建服务端 Messenger
-public MyMessenger(
-        HelloMessenger receiver     // 接口类型，事件的接收者
+public HelloMessenger(
+        Hello receiver     // 接口类型，事件的接收者
 ) // 使用默认的 Looper.getMainLooper()
 ```
 
