@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 **自定义生成的 `Messenger` 类的名称:**
 
 ```java
-@Handler("MyCustomMessenger") // 自定义 Handler 名称
+@Handler("MyCustomMessenger") // 自定义 Messenger 名称
 public interface Hello {
     void say(String words);
 
