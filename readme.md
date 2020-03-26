@@ -161,12 +161,12 @@ public HelloMessenger(IBinder target)
 // 用于创建服务端 Messenger
 public HelloMessenger(
         Looper looper,              // Looper
-        Hello receiver     // 接口类型，事件的接收者
+        Hello receiver              // 接口类型，事件的接收者
 )
 
 // 用于创建服务端 Messenger
 public HelloMessenger(
-        Hello receiver     // 接口类型，事件的接收者
+        Hello receiver              // 接口类型，事件的接收者
 ) // 使用默认的 Looper.getMainLooper()
 ```
 
