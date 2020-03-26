@@ -4,8 +4,8 @@ import java.util.List;
 
 import happy.handler.Handler;
 
-@Handler
-public interface MyInterface<T extends Number> {
+@Handler("MyHandler")
+public interface HandlerTest<T extends Number> {
     void methodNoParam();
 
     void methodByte(byte aByte);
