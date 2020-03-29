@@ -41,7 +41,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic;
 
@@ -49,20 +48,28 @@ import javafx.util.Pair;
 
 public abstract class AbstractGenerator {
     private Messager mMessager;
-    private List<Pair<String, ExecutableElement>> mMethodPairs;
+    private List<Pair<String, ExecutableElement>> mInterfaceMethodPairs;
     private List<FieldSpec> mAllMethodIdFields;
 
     private TypeSpec.Builder mHandlerBuilder;
 
     AbstractGenerator(ProcessingEnvironment processingEnv) {
         mMessager = processingEnv.getMessager();
-        mMethodPairs = new ArrayList<>();
+        mInterfaceMethodPairs = new ArrayList<>();
     }
 
-    public abstract void implementSendMessageStatement(MethodSpec.Builder builder, String argName);
+    public abstract void implement_sendMessageStatement(MethodSpec.Builder builder, String argName);
+
+    protected abstract void implementMethodStatement(MethodSpec.Builder builder, Pair<String, ExecutableElement> methodPair);
+
+    protected abstract void implement_handleMessageStatement(MethodSpec.Builder builder, TypeElement interfaceElement, String paramName);
 
     protected TypeSpec.Builder getInterfaceBuilder() {
         return mHandlerBuilder;
+    }
+
+    protected final List<Pair<String, ExecutableElement>> getInterfaceMethodPairs() {
+        return mInterfaceMethodPairs;
     }
 
     public TypeSpec generate(String className, TypeElement interfaceElement) {
@@ -90,9 +97,23 @@ public abstract class AbstractGenerator {
         mHandlerBuilder.addField(generateReceiverWeakReference());
 
         // handleMessage
-        mHandlerBuilder.addMethod(implementHandleMessage(interfaceElement));
+        mHandlerBuilder.addMethod(implement_handleMessage(interfaceElement));
 
         return mHandlerBuilder;
+    }
+
+    private MethodSpec implement_handleMessage(TypeElement interfaceElement) {
+        String paramName = "msg";
+
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("handleMessage")
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .returns(void.class)
+                .addParameter(ClassName.get("android.os", "Message"), paramName);
+
+        implement_handleMessageStatement(builder, interfaceElement, paramName);
+
+        return builder.build();
     }
 
     private void implementInterface(TypeSpec.Builder builder, TypeElement interfaceElement) {
@@ -143,7 +164,7 @@ public abstract class AbstractGenerator {
     }
 
     private List<FieldSpec> generateAllMethodId(List<ExecutableElement> methodElements) {
-        mMethodPairs.clear();
+        mInterfaceMethodPairs.clear();
 
         List<FieldSpec> allMethodIdSpec = new ArrayList<>(methodElements.size());
 
@@ -152,7 +173,7 @@ public abstract class AbstractGenerator {
             FieldSpec methodIdSpec = generateMethodId(method, i);
 
             allMethodIdSpec.add(methodIdSpec);
-            mMethodPairs.add(new Pair<>(methodIdSpec.name, method));
+            mInterfaceMethodPairs.add(new Pair<>(methodIdSpec.name, method));
         }
 
         return allMethodIdSpec;
@@ -161,7 +182,7 @@ public abstract class AbstractGenerator {
     private FieldSpec generateLastMethodIdField() {
         return FieldSpec.builder(int.class, "LAST_METHOD_ID")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer(String.valueOf(mMethodPairs.size()))
+                .initializer(String.valueOf(mInterfaceMethodPairs.size()))
                 .build();
     }
 
@@ -186,9 +207,9 @@ public abstract class AbstractGenerator {
     }
 
     private List<MethodSpec> implementAllMethod() {
-        List<MethodSpec> allMethod = new ArrayList<>(mMethodPairs.size());
+        List<MethodSpec> allMethod = new ArrayList<>(mInterfaceMethodPairs.size());
 
-        for (Pair<String, ExecutableElement> methodPair : mMethodPairs) {
+        for (Pair<String, ExecutableElement> methodPair : mInterfaceMethodPairs) {
             allMethod.add(implementMethod(methodPair));
         }
 
@@ -196,27 +217,9 @@ public abstract class AbstractGenerator {
     }
 
     private MethodSpec implementMethod(Pair<String, ExecutableElement> methodPair) {
-        ExecutableElement methodElement = methodPair.getValue();
+        MethodSpec.Builder builder = MethodSpec.overriding(methodPair.getValue());
 
-        MethodSpec.Builder builder = MethodSpec.overriding(methodElement);
-
-        List<? extends VariableElement> parameters = methodElement.getParameters();
-
-        builder.addStatement("android.os.Message message = android.os.Message.obtain()");
-        builder.addStatement("message.what = $N", methodPair.getKey());
-
-        if (parameters.size() == 0) {
-            return builder.addStatement("_sendMessage(message)")
-                    .build();
-        }
-
-        builder.addStatement("$T args = new $T()", List.class, ArrayList.class);
-        for (VariableElement param : parameters) {
-            builder.addStatement("args.add($N)", param.getSimpleName().toString());
-        }
-
-        builder.addStatement("message.obj = args")
-                .addStatement("_sendMessage(message)");
+        implementMethodStatement(builder, methodPair);
 
         return builder.build();
     }
@@ -226,86 +229,26 @@ public abstract class AbstractGenerator {
                 .addModifiers(Modifier.PRIVATE)
                 .addParameter(ClassName.get("android.os", "Message"), "message");
 
-        implementSendMessageStatement(builder, "message");
+        implement_sendMessageStatement(builder, "message");
 
         return builder.build();
-    }
-
-    private MethodSpec implementHandleMessage(TypeElement receiverTypeElement) {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder("handleMessage")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override.class)
-                .returns(void.class)
-                .addParameter(ClassName.get("android.os", "Message"), "msg");
-
-        builder.addStatement("$T receiver = ($T)mReceiverWeakRef.get()", receiverTypeElement, receiverTypeElement);
-
-        builder.beginControlFlow("if (receiver == null)")
-                .addStatement("return")
-                .endControlFlow();
-
-        builder.addStatement("List args = (ArrayList)msg.obj")
-                .beginControlFlow("switch (msg.what)");
-
-        StringBuilder buff = new StringBuilder();
-        for (Pair<String, ExecutableElement> pair : mMethodPairs) {
-            buff.delete(0, buff.length());
-
-            builder.addCode("case $N:\n", pair.getKey());
-
-            List<? extends VariableElement> parameters = pair.getValue().getParameters();
-
-            if (parameters.size() < 1) {
-                builder.addStatement("receiver.$N()", pair.getValue().getSimpleName());
-            } else {
-                buff.append("receiver.")
-                        .append(pair.getValue().getSimpleName())
-                        .append("(");
-
-                extractParamList(parameters, buff);
-
-                buff.append(")");
-                builder.addStatement(buff.toString());
-            }
-
-            builder.addStatement("break");
-        }
-
-        builder.endControlFlow();
-        return builder.build();
-    }
-
-    private void extractParamList(List<? extends VariableElement> parameters, StringBuilder buff) {
-        for (int i = 0; i < parameters.size(); i++) {
-            buff.append("(");
-
-            buff.append(parameters.get(i).asType().toString());
-
-            buff.append(")args.get(")
-                    .append(i)
-                    .append(")");
-
-            if (i < parameters.size() - 1) {
-                buff.append(",");
-            }
-        }
     }
 
     // Constructor:
     // 1. (Looper looper, Receiver receiver)
     // 2. (Receiver receiver)
-    private void generateHandlerConstructors(TypeSpec.Builder receiverBuilder, TypeElement receiverTypeElement) {
+    private void generateHandlerConstructors(TypeSpec.Builder receiverBuilder, TypeElement interfaceElement) {
         MethodSpec mainConstructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get("android.os", "Looper"), "looper")
-                .addParameter(TypeName.get(receiverTypeElement.asType()), "receiver")
+                .addParameter(TypeName.get(interfaceElement.asType()), "receiver")
                 .addStatement("super(looper)")
                 .addStatement("mReceiverWeakRef = new $T(receiver)", WeakReference.class)
                 .build();
 
         MethodSpec constructor2 = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeName.get(receiverTypeElement.asType()), "receiver")
+                .addParameter(TypeName.get(interfaceElement.asType()), "receiver")
                 .addStatement("this(android.os.Looper.getMainLooper(), receiver)")
                 .build();
 
