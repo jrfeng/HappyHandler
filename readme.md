@@ -146,7 +146,7 @@ public interface Hello {
 }
 ```
 
-**注意！接口中方法的返回值必须是 `void`。**
+**注意！接口中方法的返回值必须是 `void`，且对方法的参数类型也是有限制的（后面会介绍）。**
 
 **第 2 步**：构建项目
 
@@ -228,6 +228,37 @@ public interface Hello {
 }
 ```
 
+#### 方法的参数类型限制
+
+**支持的参数类型：**
+
+* `Java` 基本类型：`byte, short, int, long, float, double, char, boolean`
+* `String`
+* `CharSequence`
+* `IBinder`
+* `Parcelable`
+* `Serializable`
+
+**支持的数组类型：**
+
+* `Java` 基本类型数组：`byte[], short[], int[], long[], float[], double[], char[], boolean[]`
+* `String[]`
+* `CharSequence[]`
+* `Parcelable[]`
+
+**支持的 List 类型（不支持将参数定义为 List 的子类型）：**
+
+* `List<Integer>`
+* `List<String>`
+* `List<CharSequence>`
+* `List<? extends Parcelable>`
+
+**支持的其他类型：**
+
+* `SparseArray<? extends Parcelable>`
+
+**注意！不支持 `Map` 类型，请使用 `Bundle` 代替。**
+
 ## Download
 
 **第 1 步**：在项目的根目录下的 `build.gradle` 文件中添加以下代码：
@@ -245,8 +276,8 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1'
-    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1'
+    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1.1'
+    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1.1'
 }
 ```
 
