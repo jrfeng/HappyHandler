@@ -1,20 +1,20 @@
-[**English**](./readme_en.md)
-
 ## Download
 
-**第 1 步**：在项目的根目录下的 `build.gradle` 文件中添加以下代码：
+**Step 1**. Add the JitPack repository to your build file
+
+Add it in your root build.gradle at the end of repositories:
 
 ```gradle
 allprojects {
     repositories {
         ...
-        // 添加下面这行代码
+        // add the following line
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-**第 2 步**：添加依赖：
+**Step 2**. Add the dependency
 
 ```gradle
 dependencies {
@@ -23,13 +23,13 @@ dependencies {
 }
 ```
 
-## 开始使用
+## How to use
 
-**HappyHandler 可帮助开发者轻松的使用 Handler 与 Messenger。**
+**HappHandler can help developers use Handler and Messenger happily.**
 
-### 1. 自动生成 Handler
+### 1. Autogenerate Handler
 
-**第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它：
+**Step 1**. Create a interface, and annotated with `happy.handler.Hanlder`, like this:
 
 ```java
 package com.demo;
@@ -44,33 +44,33 @@ public interface Hello {
 }
 ```
 
-**注意！接口中方法的返回值必须是 `void`。**
+**Note: Return value of method in interface must be `void`。**
 
-**第 2 步**：构建项目
+**Step 2**. Build Project
 
-构建项目时，`HappyHandler` 的会根据被 `@Handler` 注解标记的接口自动生成一个 `XxxHandler` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。
+When building project, the `HappyHandler` will automatically generate an `XxxHandler` class according to the interface marked by the `@Handler` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HelloHandler` class will be generated). The generated class inherits the `android.os.handler` and implements the corresponding interface.
 
-生成的类具有 `2` 个构造方法，格式如下所示：
+The generated class has two constructor methods, like this:
 
 ```java
 public HelloHandler(
         Looper looper,      // Looper
-        Hello receiver      // 接口类型，事件的接收者
+        Hello receiver      // your interface
 )
 
 public HelloHandler(
-        Hello receiver      // 接口类型，事件的接收者
-)     // 使用默认的 Looper.getMainLooper()
+        Hello receiver      // your interface
+)     // Use Looper.getMainLooper()
 ```
 
-接着，就可以在项目中使用 `HelloHandler` 类了：
+Then, you can use the `HelloHandler` class in your project, like this:
 
 ```java
 import com.demo.HelloHandler;
 
 ...
 
-// 实现了 Hello 接口
+// Implemented the Hello interface
 public class MainActivity extends AppCompatActivity implements Hello {
     private HelloHandler mHelloHandler;
 
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements Hello {
 
         ...
         mHelloHandler = new HelloHandler(this);
-        // 接下来，就可以在其他线程中使用 mHelloHandler 来更新 UI
-        // 避免了手动编写自定义 Handler 的繁琐过程
+        // Then, you can use mHelloHandler in other threads to update the UI.
+        // Avoid the tedious process of manually writing a custom Handler.
     }
 
     @Override
@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity implements Hello {
 }
 ```
 
-**自定义生成的 `Handler` 类的名称:**
+**Custom the name of Handler class：**
 
 ```java
-@Handler("MyCustomHandler") // 自定义 Handler 名称
+@Handler("MyCustomHandler") // Custom the name of Handler class
 public interface Hello {
     void say(String words);
 
@@ -108,9 +108,9 @@ public interface Hello {
 }
 ```
 
-### 2. 自动生成 Messenger
+### 2. Autogenerate Messenger
 
-**第 1 步**：创建一个接口，并使用 `happy.handler.Messenger` 注解标注它：
+**Step 1**. Create a interface, and annotated with `happy.handler.Messenger`, like this:
 
 ```java
 @Messenger
@@ -121,42 +121,40 @@ public interface Hello {
 }
 ```
 
-**注意！接口中方法的返回值必须是 `void`，且对方法的参数类型也是有限制的（后面会介绍）。**
+**Note: The return value of the method in the interface must be `void`, and there are restrictions on the parameter type of the method (described later)**
 
-**第 2 步**：构建项目
+**Step 2**. Build Project
 
-构建项目时，`HappyHandler` 的会根据被 `@Messenger` 注解标记的接口自动生成一个 `XxxMessenger` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloMessenger` 类），生成的类实现了对应的接口。
+When building project, the HappyHandler will automatically generate an `XxxMessenger` class according to the interface marked by the `@Messenger` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HellMessenger` class will be generated). The generated class implements the corresponding interface.
 
-生成的类具有 `3` 个构造方法，格式如下所示：
+The generated class has three constructor methods, like this:
 
 ```java
-// 用于创建客户端 Messenger
+// Use to create client Messenger
 public HelloMessenger(IBinder target)
 
-// 用于创建服务端 Messenger
+// Used to create server Messenger
 public HelloMessenger(
         Looper looper,              // Looper
-        Hello receiver              // 接口类型，事件的接收者
+        Hello receiver              // your interface
 )
 
-// 用于创建服务端 Messenger
+// Used to create server Messenger
 public HelloMessenger(
-        Hello receiver              // 接口类型，事件的接收者
-) // 使用默认的 Looper.getMainLooper()
+        Hello receiver              // your interface
+) // Use Looper.getMainLooper()
 ```
 
-同时还会生成一个 `getBinder()` 方法：
+At the same time, a `getbinder()` method will be generated:
 
 ```java
 public IBinder getBinder()
 ```
 
-接着，我们就能在 `Service` 中使用 `HelloMessenger` 类了。
-
-**例：**
+Then, we can use the `HelloMessenger` class in our `Service`, like this:
 
 ```java
-// 服务端，实现了 Hello 接口
+// Service, as server
 public class MyService extends Service implements Hello {
     private HelloMessenger mHelloMessenger;
 
@@ -179,7 +177,7 @@ public class MyService extends Service implements Hello {
     }
 }
 
-// 客户端
+// Activity, as client
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private HelloMessenger mHelloMessenger;
 
@@ -192,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 }
 ```
 
-**自定义生成的 `Messenger` 类的名称:**
+**Custom the name of Messenger class：**
 
 ```java
-@Handler("MyCustomMessenger") // 自定义 Messenger 名称
+@Handler("MyCustomMessenger") // Custom the name of Messenger class
 public interface Hello {
     void say(String words);
 
@@ -203,9 +201,9 @@ public interface Hello {
 }
 ```
 
-### Messenger 接口中方法的参数类型限制
+### Parameter type restrictions for methods in the Messenger interface
 
-**支持的参数类型：**
+**Supported parameter types:**
 
 * `Java` 基本类型：`byte, short, int, long, float, double, char, boolean`
 * `String`
@@ -214,25 +212,25 @@ public interface Hello {
 * `Parcelable`
 * `Serializable`
 
-**支持的数组类型：**
+**Supported Array types:**
 
 * `Java` 基本类型数组：`byte[], short[], int[], long[], float[], double[], char[], boolean[]`
 * `String[]`
 * `CharSequence[]`
 * `Parcelable[]`
 
-**支持的 List 类型（不支持将参数定义为 List 的子类型）：**
+**Supported `List` types (defining parameter as a subtype of `List` is not supported):**
 
 * `List<Integer>`
 * `List<String>`
 * `List<CharSequence>`
 * `List<? extends Parcelable>`
 
-**支持的其他类型：**
+**Other supported types:**
 
 * `SparseArray<? extends Parcelable>`
 
-**注意！不支持 `Map` 类型，请使用 `Bundle` 代替。**
+**Note: The `Map` type is not supported. Please use `Bundle` instead.**
 
 ## LICENSE
 
