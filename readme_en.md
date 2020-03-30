@@ -205,7 +205,7 @@ public interface Hello {
 
 **Supported parameter types:**
 
-* `Java` 基本类型：`byte, short, int, long, float, double, char, boolean`
+* `Java Primitive Types`: `byte, short, int, long, float, double, char, boolean`
 * `String`
 * `CharSequence`
 * `IBinder`
@@ -214,7 +214,7 @@ public interface Hello {
 
 **Supported Array types:**
 
-* `Java` 基本类型数组：`byte[], short[], int[], long[], float[], double[], char[], boolean[]`
+* `Java Primitive Array Types`: `byte[], short[], int[], long[], float[], double[], char[], boolean[]`
 * `String[]`
 * `CharSequence[]`
 * `Parcelable[]`
