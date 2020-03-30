@@ -1,56 +1,31 @@
-**功能：帮助开发者轻松的使用 Handler 与 Messenger。**
+## Download
 
-## Handler
+**第 1 步**：在项目的根目录下的 `build.gradle` 文件中添加以下代码：
 
-**使用 Handler 的传统做法：**
-
-```java
-public class MainActivity extends AppCompatActivity {
-
-    ...
-
-    public void say(String words) {
-        Toast.makeText(this, words, Toast.LENGTH_SHORT).show();
-    }
-
-    public void sayHello() {
-        Toast.makeText(this, "Hello!", Toast.LENGTH_SHORT).show();
-    }
-
-    // 自定义 Handler
-    private static class MyHandler extends Handler {
-        private WeakReference<MainActivity> mMainActivityRef;
-
-        private static final int SAY = 1;
-        private static final int SAY_HELLO = 2;
-
-        MyHandler(MainActivity mainActivity) {
-            mMainActivityRef = new WeakReference<>(mainActivity);
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            MainActivity mainActivity = mMainActivityRef.get();
-            if (mainActivity == null) {
-                return;
-            }
-
-            switch (msg.what) {
-                case SAY:
-                    mainActivity.say((String) msg.obj);
-                    break;
-                case SAY_HELLO:
-                    mainActivity.sayHello();
-                    break;
-            }
-        }
+```gradle
+allprojects {
+    repositories {
+        ...
+        // 添加下面这行代码
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-可以看到，为了安全的使用 `Handler`，开发者不得不编写一串长长的模板代码，如果需要在多个地方使用 `Handler`，则不得不一遍又一遍的重复这个繁琐过程。`HappyHander` 可以帮助我们简化这一流程，开发者只需定义一个接口，剩下的事交给 `HappyHander` 即可。
+**第 2 步**：添加依赖：
 
-**使用 HappyHandler：**
+```gradle
+dependencies {
+    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1.1'
+    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1.1'
+}
+```
+
+## 开始使用
+
+**HappyHandler 可帮助开发者轻松的使用 Handler 与 Messenger。**
+
+### 1. 自动生成 Handler
 
 **第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它：
 
@@ -86,7 +61,7 @@ public HelloHandler(
 )     // 使用默认的 Looper.getMainLooper()
 ```
 
-接着，我们就可以在项目中自由的使用 `HelloHandler` 类了：
+接着，就可以在项目中使用 `HelloHandler` 类了：
 
 ```java
 import com.demo.HelloHandler;
@@ -131,9 +106,7 @@ public interface Hello {
 }
 ```
 
-## Messenger
-
-**使用 `Messenger` 时，开发者同样需要编写一系列的模板代码。`HappyHandler` 同样可以简化这一过程。**
+### 2. 自动生成 Messenger
 
 **第 1 步**：创建一个接口，并使用 `happy.handler.Messenger` 注解标注它：
 
@@ -176,7 +149,7 @@ public HelloMessenger(
 public IBinder getBinder()
 ```
 
-接着，我们就能在 `Service` 中自由的使用 `HelloMessenger` 类了。
+接着，我们就能在 `Service` 中使用 `HelloMessenger` 类了。
 
 **例：**
 
@@ -228,7 +201,7 @@ public interface Hello {
 }
 ```
 
-### 方法的参数类型限制
+### Messenger 接口中方法的参数类型限制
 
 **支持的参数类型：**
 
@@ -258,28 +231,6 @@ public interface Hello {
 * `SparseArray<? extends Parcelable>`
 
 **注意！不支持 `Map` 类型，请使用 `Bundle` 代替。**
-
-## Download
-
-**第 1 步**：在项目的根目录下的 `build.gradle` 文件中添加以下代码：
-
-```gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-**第 2 步**：添加依赖：
-
-```gradle
-dependencies {
-    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1.1'
-    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1.1'
-}
-```
 
 ## LICENSE
 
