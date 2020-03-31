@@ -124,6 +124,9 @@ public class MessengerGenerator extends AbstractGenerator {
         // Method: getBinder():IBinder
         generate_getBinder();
 
+        // Method: getMessenger():Messenger
+        generate_getMessenger();
+
         return mMessengerBuilder.build();
     }
 
@@ -528,6 +531,14 @@ public class MessengerGenerator extends AbstractGenerator {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.get("android.os", "IBinder"))
                 .addStatement("return $N.getBinder()", mMessengerFieldName)
+                .build());
+    }
+
+    private void generate_getMessenger() {
+        mMessengerBuilder.addMethod(MethodSpec.methodBuilder("getMessenger")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get("android.os", "Messenger"))
+                .addStatement("return $N", mMessengerFieldName)
                 .build());
     }
 
