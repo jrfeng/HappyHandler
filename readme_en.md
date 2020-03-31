@@ -1,3 +1,5 @@
+[**中文**](./readme.md)
+
 ## Download
 
 **Step 1**. Add the JitPack repository to your build file
@@ -48,7 +50,7 @@ public interface Hello {
 
 **Step 2**. Build Project
 
-When building project, the `HappyHandler` will automatically generate an `XxxHandler` class according to the interface marked by the `@Handler` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HelloHandler` class will be generated). The generated class inherits the `android.os.handler` and implements the corresponding interface.
+When building project, the `HappyHandler` will automatically generate an `XxxHandler` class according to the interface marked by the `@Handler` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HelloHandler` class will be generated). The generated class inherits the `android.os.Handler` and implements the corresponding interface.
 
 The generated class has two constructor methods, like this:
 
@@ -145,10 +147,12 @@ public HelloMessenger(
 ) // Use Looper.getMainLooper()
 ```
 
-At the same time, a `getbinder()` method will be generated:
+At the same time, a `getBinder()` and `getMessenger()` method will be generated:
 
 ```java
 public IBinder getBinder()
+
+public Messenger getMessenger()
 ```
 
 Then, we can use the `HelloMessenger` class in our `Service`, like this:

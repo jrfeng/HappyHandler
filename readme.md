@@ -145,10 +145,12 @@ public HelloMessenger(
 ) // 使用默认的 Looper.getMainLooper()
 ```
 
-同时还会生成一个 `getBinder()` 方法：
+同时还会生成一个 `getBinder()` 和一个 `getMessenger()` 方法：
 
 ```java
 public IBinder getBinder()
+
+public Messenger getMessenger()
 ```
 
 接着，我们就能在 `Service` 中使用 `HelloMessenger` 类了。
