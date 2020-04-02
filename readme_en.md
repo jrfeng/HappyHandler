@@ -20,8 +20,8 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1.2'
-    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1.2'
+    implementation 'com.github.jrfeng.HappyHandler:annotation:1.1.3'
+    annotationProcessor 'com.github.jrfeng.HappyHandler:compiler:1.1.3'
 }
 ```
 
