@@ -212,7 +212,7 @@ public interface Hello {
 * `Java Primitive Types`: `byte, short, int, long, float, double, char, boolean`
 * `String`
 * `CharSequence`
-* `IBinder`
+* `IBinder` (`API level 18`)
 * `Parcelable`
 * `Serializable`
 
@@ -233,6 +233,8 @@ public interface Hello {
 **Other supported types:**
 
 * `SparseArray<? extends Parcelable>`
+* `Size` (`API level 21`)
+* `SizeF` (`API level 21`)
 
 **Note: The `Map` type is not supported. Please use `Bundle` instead.**
 

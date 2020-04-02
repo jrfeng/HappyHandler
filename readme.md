@@ -48,7 +48,7 @@ public interface Hello {
 
 **第 2 步**：构建项目
 
-构建项目时，`HappyHandler` 的会根据被 `@Handler` 注解标记的接口自动生成一个 `XxxHandler` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。
+构建项目时，`HappyHandler` 会根据被 `@Handler` 注解标记的接口自动生成一个 `XxxHandler` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloHandler` 类），生成的类继承了 `android.os.Handler` 类，并且实现了对应的接口。
 
 生成的类具有 `2` 个构造方法，格式如下所示：
 
@@ -125,7 +125,7 @@ public interface Hello {
 
 **第 2 步**：构建项目
 
-构建项目时，`HappyHandler` 的会根据被 `@Messenger` 注解标记的接口自动生成一个 `XxxMessenger` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloMessenger` 类），生成的类实现了对应的接口。
+构建项目时，`HappyHandler` 会根据被 `@Messenger` 注解标记的接口自动生成一个 `XxxMessenger` 类（其中，`Xxx` 是接口的名称，例如，对于上例中的 `Hello` 接口来说，将生成一个 `HelloMessenger` 类），生成的类实现了对应的接口。
 
 生成的类具有 `3` 个构造方法，格式如下所示：
 
@@ -212,7 +212,7 @@ public interface Hello {
 * `Java` 基本类型：`byte, short, int, long, float, double, char, boolean`
 * `String`
 * `CharSequence`
-* `IBinder`
+* `IBinder` (`API level 18`)
 * `Parcelable`
 * `Serializable`
 
@@ -233,6 +233,8 @@ public interface Hello {
 **支持的其他类型：**
 
 * `SparseArray<? extends Parcelable>`
+* `Size` (`API level 21`)
+* `SizeF` (`API level 21`)
 
 **注意！不支持 `Map` 类型，请使用 `Bundle` 代替。**
 
