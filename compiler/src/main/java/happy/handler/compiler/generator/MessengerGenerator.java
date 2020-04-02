@@ -54,7 +54,7 @@ import javafx.util.Pair;
  * 1. byte, short, int, long, float, double, char, boolean
  * 2. String
  * 3. CharSequence
- * 4. IBinder
+ * 4. IBinder (API level 18)
  * 5. Parcelable
  * 6. Serializable
  * <p>
@@ -72,6 +72,8 @@ import javafx.util.Pair;
  * <p>
  * Other Supported Type:
  * 1. SparseArray<? extends Parcelable>
+ * 2. android.util.Size (API level 21)
+ * 3. android.util.SizeF (API level 21)
  * <p>
  * Note: Unsupported Map.
  */
@@ -244,6 +246,16 @@ public class MessengerGenerator extends AbstractGenerator {
 
         if (isSerializable(paramType)) {
             extractSerializable(builder, param, bundleName, paramPrefix);
+            return;
+        }
+
+        if (isSize(paramType)) {
+            extractSize(builder, param, bundleName, paramPrefix);
+            return;
+        }
+
+        if (isSizeF(paramType)) {
+            extractSizeF(builder, param, bundleName, paramPrefix);
         }
     }
 
@@ -491,6 +503,20 @@ public class MessengerGenerator extends AbstractGenerator {
                 paramName);
     }
 
+    // android.util.Size
+    private void extractSize(MethodSpec.Builder builder, VariableElement param, String bundleName, String paramPrefix) {
+        TypeMirror typeMirror = param.asType();
+        String paramName = param.getSimpleName().toString();
+        builder.addStatement("$T $N_$N = $N.getSize($S)", typeMirror, paramPrefix, paramName, bundleName, paramName);
+    }
+
+    // android.util.SizeF
+    private void extractSizeF(MethodSpec.Builder builder, VariableElement param, String bundleName, String paramPrefix) {
+        TypeMirror typeMirror = param.asType();
+        String paramName = param.getSimpleName().toString();
+        builder.addStatement("$T $N_$N = $N.getSizeF($S)", typeMirror, paramPrefix, paramName, bundleName, paramName);
+    }
+
     private String getParamList(String prefix, ExecutableElement method) {
         StringBuilder buf = new StringBuilder();
 
@@ -609,7 +635,9 @@ public class MessengerGenerator extends AbstractGenerator {
                 isCharSequence(element) ||
                 isIBinder(element) ||
                 isParcelable(element) ||
-                isSerializable(element)
+                isSerializable(element) ||
+                isSize(element) ||
+                isSizeF(element)
         );
     }
 
@@ -698,6 +726,14 @@ public class MessengerGenerator extends AbstractGenerator {
         return isSubType(element, "java.io.Serializable");
     }
 
+    private boolean isSize(Element element) {
+        return isSubType(element, "android.util.Size");
+    }
+
+    private boolean isSizeF(Element element) {
+        return isSubType(element, "android.util.SizeF");
+    }
+
     private boolean isInteger(Element element) {
         return isSubType(element, "java.lang.Integer");
     }
@@ -752,6 +788,16 @@ public class MessengerGenerator extends AbstractGenerator {
 
         if (isSerializable(paramType)) {
             putSerializable(builder, param, bundleName);
+            return;
+        }
+
+        if (isSize(paramType)) {
+            putSize(builder, param, bundleName);
+            return;
+        }
+
+        if (isSizeF(paramType)) {
+            putSizeF(builder, param, bundleName);
         }
     }
 
@@ -799,6 +845,26 @@ public class MessengerGenerator extends AbstractGenerator {
     private void putSerializable(MethodSpec.Builder builder, VariableElement param, String bundleName) {
         String paramName = param.getSimpleName().toString();
         builder.addStatement("$N.putSerializable($S, $N)", bundleName, paramName, paramName);
+    }
+
+    // android.util.Size
+    private void putSize(MethodSpec.Builder builder, VariableElement param, String bundleName) {
+        builder.addAnnotation(AnnotationSpec.builder(ClassName.get("androidx.annotation", "RequiresApi"))
+                .addMember("value", "android.os.Build.VERSION_CODES.LOLLIPOP")
+                .build());
+
+        String paramName = param.getSimpleName().toString();
+        builder.addStatement("$N.putSize($S, $N)", bundleName, paramName, paramName);
+    }
+
+    // android.util.SizeF
+    private void putSizeF(MethodSpec.Builder builder, VariableElement param, String bundleName) {
+        builder.addAnnotation(AnnotationSpec.builder(ClassName.get("androidx.annotation", "RequiresApi"))
+                .addMember("value", "android.os.Build.VERSION_CODES.LOLLIPOP")
+                .build());
+
+        String paramName = param.getSimpleName().toString();
+        builder.addStatement("$N.putSizeF($S, $N)", bundleName, paramName, paramName);
     }
 
     // 1. byte[], short[], int[], long[], float[], double[], char[], boolean[]
