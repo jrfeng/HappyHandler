@@ -2,6 +2,8 @@ package happy.handler.test;
 
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Size;
+import android.util.SizeF;
 import android.util.SparseArray;
 
 import java.io.File;
@@ -82,4 +84,8 @@ public interface MessengerTest {
                        List<CharSequence> charSequenceList, List<Bundle> parcelableList);
 
     void methodSparseParcelableArray(SparseArray<Bundle> sparseParcelableArray);
+
+    void methodSize(Size size);
+
+    void methodSizeF(SizeF sizeF);
 }
