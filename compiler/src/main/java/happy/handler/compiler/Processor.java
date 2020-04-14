@@ -50,7 +50,8 @@ import happy.handler.compiler.generator.MessengerGenerator;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({
-        "happy.handler.Handler"
+        "happy.handler.Handler",
+        "happy.handler.Messenger"
 })
 public class Processor extends AbstractProcessor {
     private HandlerGenerator mHandlerGenerator;
