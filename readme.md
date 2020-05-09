@@ -27,11 +27,11 @@ dependencies {
 
 ## How to use
 
-**HappHandler can help developers use Handler and Messenger happily.**
+**HappHandler can help android developers use Handler and Messenger easily(Don't worry about memory leaks).**
 
 ### 1. Autogenerate Handler
 
-**Step 1**. Create a interface, and annotated with `happy.handler.Hanlder`, like this:
+**Step 1**. Create a interface, and annotated with `happy.handler.Hanlder`, example:
 
 ```java
 package com.demo;
@@ -46,13 +46,13 @@ public interface Hello {
 }
 ```
 
-**Note: Return value of method in interface must be `void`。**
+**Note: Return type of method in interface must be `void`。**
 
 **Step 2**. Build Project
 
 When building project, the `HappyHandler` will automatically generate an `XxxHandler` class according to the interface marked by the `@Handler` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HelloHandler` class will be generated). The generated class inherits the `android.os.Handler` and implements the corresponding interface.
 
-The generated class has two constructor methods, like this:
+The generated class has two constructor methods, example:
 
 ```java
 public HelloHandler(
@@ -65,7 +65,7 @@ public HelloHandler(
 )     // Use Looper.getMainLooper()
 ```
 
-Then, you can use the `HelloHandler` class in your project, like this:
+Then, you can use the `HelloHandler` class in your project, example:
 
 ```java
 import com.demo.HelloHandler;
@@ -99,10 +99,10 @@ public class MainActivity extends AppCompatActivity implements Hello {
 }
 ```
 
-**Custom the name of Handler class：**
+**You also can custom the name of Handler class, example:**
 
 ```java
-@Handler("MyCustomHandler") // Custom the name of Handler class
+@Handler("MyCustomHandler")     // Custom the name of Handler class
 public interface Hello {
     void say(String words);
 
@@ -112,7 +112,7 @@ public interface Hello {
 
 ### 2. Autogenerate Messenger
 
-**Step 1**. Create a interface, and annotated with `happy.handler.Messenger`, like this:
+**Step 1**. Create a interface, and annotated with `happy.handler.Messenger`, example:
 
 ```java
 @Messenger
@@ -123,13 +123,13 @@ public interface Hello {
 }
 ```
 
-**Note: The return value of the method in the interface must be `void`, and there are restrictions on the parameter type of the method (described later)**
+**Note: The return type of the method in the interface must be `void`, and there are restrictions on the parameter type of the method (see [next section](https://github.com/jrfeng/HappyHandler#parameter-type-restrictions-for-methods-in-the-messenger-interface))**
 
 **Step 2**. Build Project
 
 When building project, the HappyHandler will automatically generate an `XxxMessenger` class according to the interface marked by the `@Messenger` annotation (where `Xxx` is the name of the interface, for example, for the `Hello` interface in the above example, a `HellMessenger` class will be generated). The generated class implements the corresponding interface.
 
-The generated class has three constructor methods, like this:
+The generated class has three constructor methods, example:
 
 ```java
 // Use to create client Messenger
@@ -155,7 +155,7 @@ public IBinder getBinder()
 public Messenger getMessenger()
 ```
 
-Then, we can use the `HelloMessenger` class in our `Service`, like this:
+Then, we can use the `HelloMessenger` class in our `Service`, example:
 
 ```java
 // Service, as server
@@ -194,10 +194,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 }
 ```
 
-**Custom the name of Messenger class：**
+**You also can custom the name of Messenger class, example:**
 
 ```java
-@Handler("MyCustomMessenger") // Custom the name of Messenger class
+@Handler("MyCustomMessenger")   // Custom the name of Messenger class
 public interface Hello {
     void say(String words);
 

@@ -29,7 +29,7 @@ dependencies {
 
 ### 1. 自动生成 Handler
 
-**第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它：
+**第 1 步**：创建一个接口，并且使用 `happy.handler.Hanlder` 注解标注它，例如：
 
 ```java
 package com.demo;
@@ -63,7 +63,7 @@ public HelloHandler(
 )     // 使用默认的 Looper.getMainLooper()
 ```
 
-接着，就可以在项目中使用 `HelloHandler` 类了：
+接着，就可以在项目中使用 `HelloHandler` 类了，例如：
 
 ```java
 import com.demo.HelloHandler;
@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity implements Hello {
 }
 ```
 
-**自定义生成的 `Handler` 类的名称:**
+**你还可以自定义生成的 `Handler` 类的名称，例如:**
 
 ```java
-@Handler("MyCustomHandler") // 自定义 Handler 名称
+@Handler("MyCustomHandler")     // 自定义 Handler 名称
 public interface Hello {
     void say(String words);
 
@@ -110,7 +110,7 @@ public interface Hello {
 
 ### 2. 自动生成 Messenger
 
-**第 1 步**：创建一个接口，并使用 `happy.handler.Messenger` 注解标注它：
+**第 1 步**：创建一个接口，并使用 `happy.handler.Messenger` 注解标注它，例如：
 
 ```java
 @Messenger
@@ -121,7 +121,7 @@ public interface Hello {
 }
 ```
 
-**注意！接口中方法的返回值必须是 `void`，且对方法的参数类型也是有限制的（后面会介绍）。**
+**注意！接口中方法的返回值必须是 `void`，且对方法的参数类型也是有限制的（[下一节](https://github.com/jrfeng/HappyHandler/blob/master/readme_cn.md#messenger-%E6%8E%A5%E5%8F%A3%E4%B8%AD%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B%E9%99%90%E5%88%B6)会介绍）。**
 
 **第 2 步**：构建项目
 
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 }
 ```
 
-**自定义生成的 `Messenger` 类的名称:**
+**你还可以自定义生成的 `Messenger` 类的名称，例如:**
 
 ```java
 @Handler("MyCustomMessenger") // 自定义 Messenger 名称
