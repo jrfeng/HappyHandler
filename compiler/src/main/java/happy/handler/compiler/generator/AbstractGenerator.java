@@ -42,11 +42,14 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 import javafx.util.Pair;
 
 public abstract class AbstractGenerator {
+    private Types mTypes;
     private Messager mMessager;
     private List<Pair<String, ExecutableElement>> mInterfaceMethodPairs;
     private List<FieldSpec> mAllMethodIdFields;
@@ -54,6 +57,7 @@ public abstract class AbstractGenerator {
     private TypeSpec.Builder mHandlerBuilder;
 
     AbstractGenerator(ProcessingEnvironment processingEnv) {
+        mTypes = processingEnv.getTypeUtils();
         mMessager = processingEnv.getMessager();
         mInterfaceMethodPairs = new ArrayList<>();
     }
@@ -138,9 +142,15 @@ public abstract class AbstractGenerator {
     }
 
     private List<ExecutableElement> getAllMethod(TypeElement element) {
-        List<? extends Element> elements = element.getEnclosedElements();
+        List<ExecutableElement> result = new ArrayList<>();
 
-        List<ExecutableElement> result = new ArrayList<>(elements.size());
+        List<? extends TypeMirror> superTypes = element.getInterfaces();
+
+        for (TypeMirror superType : superTypes) {
+            result.addAll(getAllMethod((TypeElement) mTypes.asElement(superType)));
+        }
+
+        List<? extends Element> elements = element.getEnclosedElements();
 
         for (Element e : elements) {
             if (e instanceof ExecutableElement) {
