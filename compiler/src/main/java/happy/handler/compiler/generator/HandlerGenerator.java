@@ -78,7 +78,7 @@ public class HandlerGenerator extends AbstractGenerator {
                 .addStatement("return")
                 .endControlFlow();
 
-        builder.addStatement("List args = (ArrayList)$N.obj", paramName)
+        builder.addStatement("java.util.List args = (java.util.ArrayList)$N.obj", paramName)
                 .beginControlFlow("switch ($N.what)", paramName);
 
         StringBuilder buff = new StringBuilder();
